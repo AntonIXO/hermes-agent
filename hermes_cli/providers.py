@@ -791,10 +791,17 @@ def resolve_custom_provider(
         if requested not in custom_provider_aliases(display_name, provider_key):
             continue
 
+        entry_provider = (entry.get("provider") or "").strip().lower()
+        entry_api_mode = (entry.get("api_mode") or "").strip().lower()
+        if entry_api_mode == "anthropic_messages" or entry_provider == "anthropic" or "/anthropic" in api_url.lower():
+            transport = "anthropic_messages"
+        else:
+            transport = "openai_chat"
+
         return ProviderDef(
             id=slug,
             name=display_name,
-            transport="openai_chat",
+            transport=transport,
             api_key_env_vars=tuple(env_vars),
             base_url=api_url,
             is_aggregator=False,
